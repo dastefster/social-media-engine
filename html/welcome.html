@@ -1,1 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Social Media Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── IG GRADIENT PALETTE ── */
+/* Top-left: #5555ce (purple-blue)
+   Top-right: #9737be (magenta-purple)
+   Center: #e03567 (hot pink)
+   Bot-left: #fdb955 (golden yellow)
+   Bot-right: #d92e7a (deep magenta) */
 
+:root {
+  --ig-purple:    #5555ce;
+  --ig-violet:    #9737be;
+  --ig-pink:      #e03567;
+  --ig-magenta:   #d92e7a;
+  --ig-orange:    #f77737;
+  --ig-yellow:    #fdb955;
+
+  /* gradient definitions */
+  --ig-grad:      linear-gradient(135deg, #5555ce 0%, #9737be 25%, #e03567 55%, #f77737 80%, #fdb955 100%);
+  --ig-grad-text: linear-gradient(135deg, #8b6fd4 0%, #c45bb8 30%, #e03567 55%, #f77737 80%, #fdb955 100%);
+  --ig-grad-alt:  linear-gradient(225deg, #fdb955 0%, #f77737 20%, #e03567 50%, #9737be 80%, #5555ce 100%);
+
+  /* accent (pink as primary tap point) */
+  --accent:       #e03567;
+  --accent-bright:#f0457a;
+  --accent-dim:   #b8294f;
+  --accent-glow:  rgba(224,53,103,0.35);
+  --accent-subtle:rgba(224,53,103,0.09);
+  --border-accent:rgba(224,53,103,0.22);
+
+  /* surface */
+  --bg:           #07070a;
+  --bg-card:      #0e0e12;
+  --bg-elevated:  #14141a;
+  --border:       rgba(255,255,255,0.055);
+  --text:         #eeeef2;
+  --text-muted:   #56566a;
+  --text-secondary:#8d8da0;
+}
+
+/* ── LIGHT MODE OVERRIDES ── */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:           #f7f7fa;
+    --bg-card:      #ffffff;
+    --bg-elevated:  #efeff5;
+    --border:       rgba(0,0,0,0.08);
+    --border-accent:rgba(224,53,103,0.28);
+    --text:         #12121a;
+    --text-muted:   #a0a0b8;
+    --text-secondary:#5c5c78;
+    --accent-subtle:rgba(224,53,103,0.07);
+  }
+  #hero { background: radial-gradient(ellipse 55% 45% at 50% 60%, rgba(224,53,103,0.08) 0%, transparent 70%), radial-gradient(ellipse 35% 25% at 15% 20%, rgba(85,85,206,0.06) 0%, transparent 60%) !important; }
+  .hamburger-btn { background: var(--bg-card); }
+  .topbar { background: linear-gradient(to bottom, rgba(247,247,250,0.97), rgba(247,247,250,0)) !important; }
+  .menu-drawer { background: var(--bg-card); }
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+
+/* ── MENU OVERLAY ── */
+.menu-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);opacity:0;pointer-events:none;transition:opacity 0.3s ease;}
+.menu-overlay.open{opacity:1;pointer-events:all;}
+.menu-drawer{position:absolute;top:0;left:0;bottom:0;width:72%;max-width:285px;background:var(--bg-elevated);border-right:1px solid var(--border);transform:translateX(-100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow-y:auto;}
+.menu-overlay.open .menu-drawer{transform:translateX(0);}
+.menu-header{padding:56px 24px 20px;border-bottom:1px solid var(--border);}
+.menu-app-name{font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;letter-spacing:-0.01em;margin-bottom:4px;background:var(--ig-grad-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.menu-app-sub{font-size:11px;color:var(--text-muted);}
+.menu-toc{flex:1;padding:16px 0;}
+.menu-toc-item{display:flex;align-items:center;gap:14px;padding:14px 24px;cursor:pointer;border-left:3px solid transparent;transition:background 0.15s,border-color 0.15s;}
+.menu-toc-item:active{background:var(--accent-subtle);}
+.menu-toc-item.active{border-left-color:var(--accent-bright);background:var(--accent-subtle);}
+.menu-toc-num{font-size:11px;font-weight:600;color:var(--accent-bright);opacity:0.7;width:20px;flex-shrink:0;}
+.menu-toc-label{font-size:14px;font-weight:500;color:var(--text);}
+.menu-toc-item.active .menu-toc-label{color:var(--accent-bright);}
+.menu-footer{padding:20px 24px 44px;border-top:1px solid var(--border);}
+.menu-author{font-size:12px;color:var(--text-muted);line-height:1.6;}
+.menu-author a{color:var(--accent-bright);text-decoration:none;font-weight:500;}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:linear-gradient(to bottom,rgba(7,7,10,0.96),rgba(7,7,10,0));}
+.hamburger-btn{width:36px;height:36px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:border-color 0.2s;}
+.hamburger-btn:active{border-color:var(--border-accent);}
+.hamburger-line{width:16px;height:1.5px;background:var(--text-secondary);border-radius:2px;}
+.topbar-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--text-secondary);}
+
+/* ── SIDE DOTS ── */
+.side-nav{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:9px;}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--text-muted);cursor:pointer;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.nav-dot.active{width:7px;height:7px;background:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
+
+/* ── SECTIONS ── */
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 26px 60px;opacity:0;transform:translateY(28px);transition:opacity 0.65s ease,transform 0.65s ease;}
+section.visible{opacity:1;transform:translateY(0);}
+
+/* ── HERO ── */
+#hero{align-items:center;text-align:center;background:radial-gradient(ellipse 60% 50% at 50% 60%,rgba(224,53,103,0.12) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 10% 15%,rgba(85,85,206,0.08) 0%,transparent 60%),radial-gradient(ellipse 35% 25% at 90% 85%,rgba(253,185,85,0.06) 0%,transparent 55%);}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:var(--accent-subtle);border:1px solid var(--border-accent);border-radius:100px;padding:5px 13px;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent-bright);margin-bottom:26px;}
+.badge-pulse{width:5px;height:5px;border-radius:50%;background:var(--accent-bright);animation:pulse 2s infinite;}
+.hero-icon{width:88px;height:88px;margin:0 auto 20px;border-radius:22px;background:var(--ig-grad);display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 0 40px rgba(224,53,103,0.35),0 0 80px rgba(85,85,206,0.15);animation:iconGlow 4s ease-in-out infinite;}
+@keyframes iconGlow{0%,100%{box-shadow:0 0 40px rgba(224,53,103,0.35),0 0 80px rgba(85,85,206,0.15);}50%{box-shadow:0 0 55px rgba(224,53,103,0.5),0 0 100px rgba(85,85,206,0.25);}}
+.hero-title{font-family:'DM Sans',sans-serif;font-size:clamp(30px,9vw,48px);font-weight:800;line-height:1.2;letter-spacing:-0.01em;margin-bottom:6px;overflow:visible;padding-bottom:4px;}
+.hero-sub{font-size:11px;font-weight:500;color:var(--text-muted);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;}
+.hero-desc{font-size:14px;line-height:1.65;color:var(--text-secondary);max-width:295px;margin:0 auto 24px;}
+.version-row{display:flex;align-items:center;gap:10px;margin-bottom:30px;justify-content:center;flex-wrap:wrap;}
+.version-chip{display:inline-flex;align-items:center;gap:7px;background:var(--bg-card);border:1px solid var(--border);border-radius:100px;padding:6px 13px;font-size:11px;color:var(--text-secondary);}
+.version-chip strong{color:var(--text);font-weight:500;}
+.author-chip{display:inline-flex;align-items:center;gap:7px;background:var(--bg-card);border:1px solid var(--border-accent);border-radius:100px;padding:6px 13px;font-size:11px;color:var(--accent-bright);text-decoration:none;font-weight:500;transition:background 0.2s;}
+.author-chip:active{background:var(--accent-subtle);}
+.scroll-hint{display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--text-muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;user-select:none;}
+.scroll-arrow{width:19px;height:19px;border-right:1.5px solid var(--text-muted);border-bottom:1.5px solid var(--text-muted);transform:rotate(45deg);animation:bounce 2s infinite;}
+
+/* ── GRADIENT TEXT ── */
+.gradient-text{
+  background:var(--ig-grad-text);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradientShift 6s ease infinite;
+  display:inline-block;
+  padding-bottom:0.1em;
+  margin-bottom:-0.1em;
+}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ── SECTION HEADER ── */
+.section-tag{font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-bright);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.section-tag::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border-accent),transparent);max-width:50px;}
+.section-title{font-family:'DM Sans',sans-serif;font-size:clamp(22px,6vw,30px);font-weight:800;line-height:1.2;letter-spacing:-0.01em;margin-bottom:8px;overflow:visible;padding-bottom:4px;}
+.section-desc{font-size:13px;line-height:1.65;color:var(--text-secondary);margin-bottom:28px;}
+
+/* ── FEATURE CARDS ── */
+.feature-grid{display:flex;flex-direction:column;gap:10px;}
+.feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:15px;display:flex;gap:13px;align-items:flex-start;opacity:0;transform:translateY(14px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.feature-card.visible{opacity:1;transform:translateY(0);}
+.fi{width:38px;height:38px;background:var(--accent-subtle);border:1px solid var(--border-accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.fn{font-size:13px;font-weight:600;margin-bottom:3px;}
+.fd{font-size:11px;line-height:1.5;color:var(--text-secondary);}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;position:relative;}
+.steps::before{content:'';position:absolute;left:17px;top:18px;bottom:18px;width:1px;background:linear-gradient(to bottom,var(--ig-purple),var(--accent),rgba(247,119,55,0.08));}
+.step{display:flex;gap:14px;padding-bottom:22px;}
+.step:last-child{padding-bottom:0;}
+.step-n{width:34px;height:34px;background:var(--bg);border:1px solid var(--border-accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent-bright);flex-shrink:0;z-index:1;}
+.step-body{padding-top:6px;}
+.st{font-size:13px;font-weight:600;margin-bottom:3px;}
+.sd{font-size:11px;line-height:1.5;color:var(--text-secondary);}
+
+/* ── DEPS ── */
+.dep-list{display:flex;flex-direction:column;gap:10px;}
+.dep-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;transition:border-color 0.2s;}
+.dep-card.tappable{cursor:pointer;}
+.dep-card.tappable:active{border-color:var(--border-accent);}
+.dep-ic{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.req-bg{background:var(--accent-subtle);}
+.opt-bg{background:rgba(255,255,255,0.04);}
+.dep-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.dep-link{font-size:10px;color:var(--accent-bright);margin-left:4px;font-weight:500;}
+.dep-role{font-size:11px;color:var(--text-secondary);line-height:1.4;}
+.dep-tag{margin-left:auto;font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:100px;flex-shrink:0;}
+.tag-req{background:var(--accent-subtle);color:var(--accent-bright);border:1px solid var(--border-accent);}
+.tag-bi{background:var(--bg-elevated);color:var(--text-muted);border:1px solid var(--border);}
+
+/* ── DISCLAIMER CARD ── */
+.disc-card{background:var(--bg-card);border:1px solid rgba(253,185,85,0.2);border-radius:14px;padding:16px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start;}
+.disc-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.disc-title{font-size:12px;font-weight:600;color:#fdb955;margin-bottom:4px;}
+.disc-body{font-size:11px;line-height:1.6;color:var(--text-secondary);}
+
+/* ── CTA ── */
+#cta{align-items:center;text-align:center;}
+.cta-title{font-family:'DM Sans',sans-serif;font-size:clamp(28px,8vw,42px);font-weight:800;line-height:1.25;letter-spacing:-0.01em;margin-bottom:12px;}
+.cta-sub{font-size:14px;line-height:1.65;color:var(--text-secondary);max-width:320px;margin:0 auto 28px;}
+.cta-note{font-size:12px;color:var(--text-muted);margin-bottom:10px;font-weight:600;}
+.cta-btn{background:var(--ig-grad);border:none;border-radius:14px;padding:16px 36px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 6px 24px var(--accent-glow);margin-bottom:16px;background-size:200% 200%;animation:gradientShift 4s ease infinite;}
+.cta-btn:active{transform:scale(0.97);box-shadow:0 3px 12px var(--accent-glow);}
+.cta-author{font-size:11px;color:var(--text-muted);margin-top:16px;}
+.cta-author a{color:var(--accent-bright);text-decoration:none;font-weight:500;}
+.cta-fine-print{font-size:11px;color:var(--text-muted);margin-top:20px;max-width:300px;line-height:1.6;}
+
+@keyframes pulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
+@keyframes bounce{0%,100%{transform:translateY(0) rotate(45deg);}50%{transform:translateY(4px) rotate(45deg);}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="hamburger-btn" onclick="openMenu()">
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+  </div>
+  <div class="topbar-title">Social Media Engine</div>
+</div>
+
+<!-- SIDE NAV DOTS -->
+<div class="side-nav">
+  <div class="nav-dot" data-s="hero"      onclick="goTo('hero')"></div>
+  <div class="nav-dot" data-s="features"  onclick="goTo('features')"></div>
+  <div class="nav-dot" data-s="how"       onclick="goTo('how')"></div>
+  <div class="nav-dot" data-s="deps"      onclick="goTo('deps')"></div>
+  <div class="nav-dot" data-s="notes"     onclick="goTo('notes')"></div>
+  <div class="nav-dot" data-s="cta"       onclick="goTo('cta')"></div>
+</div>
+
+<!-- MENU OVERLAY -->
+<div id="menuOverlay" class="menu-overlay" onclick="closeMenu(event)">
+  <div class="menu-drawer">
+    <div class="menu-header">
+      <div class="menu-app-name">Social Media Engine</div>
+      <div class="menu-app-sub">Instagram toolkit for Shortcuts</div>
+    </div>
+    <div class="menu-toc">
+      <div class="menu-toc-item" data-section="hero"     onclick="tocNav('hero')"><div class="menu-toc-num">01</div><div class="menu-toc-label">Welcome</div></div>
+      <div class="menu-toc-item" data-section="features" onclick="tocNav('features')"><div class="menu-toc-num">02</div><div class="menu-toc-label">Features</div></div>
+      <div class="menu-toc-item" data-section="how"      onclick="tocNav('how')"><div class="menu-toc-num">03</div><div class="menu-toc-label">How it Works</div></div>
+      <div class="menu-toc-item" data-section="deps"     onclick="tocNav('deps')"><div class="menu-toc-num">04</div><div class="menu-toc-label">Requirements</div></div>
+      <div class="menu-toc-item" data-section="notes"    onclick="tocNav('notes')"><div class="menu-toc-num">05</div><div class="menu-toc-label">Important Notes</div></div>
+      <div class="menu-toc-item" data-section="cta"      onclick="tocNav('cta')"><div class="menu-toc-num">06</div><div class="menu-toc-label">Get Started</div></div>
+    </div>
+    <div class="menu-footer">
+      <div class="menu-author">
+        Shortcut by <a href="https://routinehub.co/user/dastefster" target="_blank">@Dastefster</a> on RoutineHub<br>
+        Download credit: <a href="https://routinehub.co/user/gluebyte" target="_blank">@gluebyte</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 HERO -->
+<section id="hero">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div class="hero-badge">
+      <div class="badge-pulse"></div>
+      New Release
+    </div>
+    <div class="hero-icon">📸</div>
+    <h1 class="hero-title"><span class="gradient-text">Social Media Engine</span></h1>
+    <div class="hero-sub">Instagram Toolkit for Shortcuts</div>
+    <p class="hero-desc">Track followers, spot changes, visualize growth, and download content — all from your Shortcuts.</p>
+    <div class="version-row">
+      <div class="version-chip">Version <strong>1.0.0</strong></div>
+      <a href="https://routinehub.co/user/dastefster" class="author-chip" target="_blank">@Dastefster 🍒🔨</a>
+    </div>
+    <div class="scroll-hint" onclick="scrollNext()">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 FEATURES -->
+<section id="features">
+  <div class="section-tag">02 · Features</div>
+  <h2 class="section-title">Everything you need to<br><span class="gradient-text">own your feed</span>.</h2>
+  <p class="section-desc">One script. Four core tools. All running natively in Scriptable.</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="fi">👥</div>
+      <div><div class="fn">Follower Tracker</div><div class="fd">Snapshot your followers list and compare it against the last run — new followers and unfollowers shown instantly.</div></div>
+    </div>
+    <div class="feature-card">
+      <div class="fi">📊</div>
+      <div><div class="fn">Followers History Graph</div><div class="fd">Beautiful HTML chart generated on demand — visualize your follower growth over time, opened directly in Safari.</div></div>
+    </div>
+    <div class="feature-card">
+      <div class="fi">🔔</div>
+      <div><div class="fn">Change Log</div><div class="fd">Persistent log of every follow and unfollow event with timestamps. Full history, never overwritten.</div></div>
+    </div>
+    <div class="feature-card">
+      <div class="fi">⬇️</div>
+      <div><div class="fn">Media Downloader</div><div class="fd">Download posts, reels, carousels, and stories at full quality. Share a link from Instagram and it handles the rest.</div></div>
+    </div>
+    <div class="feature-card">
+      <div class="fi">🔐</div>
+      <div><div class="fn">Secure Session Storage</div><div class="fd">Auth credentials stored only in local Scriptable storage — never in iCloud, never displayed, never sent anywhere.</div></div>
+    </div>
+    <div class="feature-card">
+      <div class="fi">⚡️</div>
+      <div><div class="fn">Instant Settings</div><div class="fd">All preferences read from local storage — no sync lag, changes apply the moment you make them.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 HOW IT WORKS -->
+<section id="how">
+  <div class="section-tag">03 · How it works</div>
+  <h2 class="section-title">Simple to run.<br><span class="gradient-text">Smart</span> under the hood.</h2>
+  <p class="section-desc">Scriptable does the heavy lifting. Shortcuts just pulls the trigger.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body"><div class="st">First-Time Setup</div><div class="sd">Run the shortcut once. A guided setup walks you through logging into Instagram via secure WebView — your session is cached locally.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body"><div class="st">Run Anytime</div><div class="sd">Launch from the main Shortcuts app, your home screen widget, or share sheet. The script picks up right where it left off.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body"><div class="st">Followers Are Fetched</div><div class="sd">Your current followers list is pulled via Instagram's private API and compared to your last cached snapshot automatically.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body"><div class="st">See What Changed</div><div class="sd">New followers and unfollowers are displayed with profile links. Tap any account to open their profile in Safari.</div></div>
+    </div>
+    <div class="step">
+      <div class="step-n">5</div>
+      <div class="step-body"><div class="st">History Updates</div><div class="sd">Every run logs your follower count. Open the history graph anytime to see your growth over time as a clean visual chart.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 REQUIREMENTS -->
+<section id="deps">
+  <div class="section-tag">04 · Requirements</div>
+  <h2 class="section-title">What you'll need.</h2>
+  <p class="section-desc">Two apps required. Both free. Both one tap away.</p>
+  <div class="dep-list">
+    <div class="dep-card tappable" onclick="window.open('https://apps.apple.com/app/scriptable/id1405459188','_blank')">
+      <div class="dep-ic req-bg">📱</div>
+      <div>
+        <div class="dep-name">Scriptable <span class="dep-link">↗ App Store</span></div>
+        <div class="dep-role">The processing engine — runs the entire script. Free app.</div>
+      </div>
+      <span class="dep-tag tag-req">Required</span>
+    </div>
+    <div class="dep-card">
+      <div class="dep-ic req-bg">📄</div>
+      <div>
+        <div class="dep-name">SME Script</div>
+        <div class="dep-role">Auto-installed into Scriptable on first run.</div>
+      </div>
+      <span class="dep-tag tag-bi">Auto-Install</span>
+    </div>
+    <div class="dep-card tappable" onclick="window.open('https://apps.apple.com/app/instagram/id389801252','_blank')">
+      <div class="dep-ic opt-bg">📷</div>
+      <div>
+        <div class="dep-name">Instagram <span class="dep-link">↗ App Store</span></div>
+        <div class="dep-role">Not required by the script, but you'll need an Instagram account.</div>
+      </div>
+      <span class="dep-tag tag-bi">Obvious</span>
+    </div>
+  </div>
+</section>
+
+<!-- 05 IMPORTANT NOTES -->
+<section id="notes">
+  <div class="section-tag">05 · Before You Begin</div>
+  <h2 class="section-title">A few things to<br><span class="gradient-text">know first</span>.</h2>
+  <p class="section-desc">Read these before running for the first time.</p>
+
+  <div class="disc-card">
+    <div class="disc-icon">⚠️</div>
+    <div>
+      <div class="disc-title">Two-Factor Authentication</div>
+      <div class="disc-body">If you have 2FA enabled on your Instagram account, you may need to temporarily disable it during the initial login to allow the script to cache your session. Once setup is complete you can re-enable 2FA — the cached session persists until it expires naturally.</div>
+    </div>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-icon">🔒</div>
+    <div>
+      <div class="disc-title">Your Data Stays on Your Device</div>
+      <div class="disc-body">Your Instagram session tokens and credentials are stored exclusively in local Scriptable storage on your device. They are never written to iCloud, never transmitted to any external server, and are never displayed or accessible outside the script itself.</div>
+    </div>
+  </div>
+
+  <div class="disc-card">
+    <div class="disc-icon">📥</div>
+    <div>
+      <div class="disc-title">Download Function Credit</div>
+      <div class="disc-body">The media download functionality is based on the work of <a href="https://routinehub.co/user/gluebyte" target="_blank" style="color:var(--accent-bright);text-decoration:none;font-weight:600;">@gluebyte</a> on RoutineHub. Huge credit to them for the original Instagram Download shortcut.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 CTA -->
+<section id="cta">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div class="cta-title">Ready to<br><span class="gradient-text">start tracking?</span></div>
+    <p class="cta-sub">Setup takes under a minute. Log in once, run forever.</p>
+    <p class="cta-note">⚠️ Scriptable must be installed before proceeding</p>
+    <button class="cta-btn" onclick="handleGetStarted()">Install Script & Get Started →</button>
+    <p class="cta-author">
+      Shortcut by <a href="https://routinehub.co/user/dastefster" target="_blank">@Dastefster</a> on RoutineHub
+    </p>
+    <p class="cta-fine-print"><em>This shortcut uses Instagram's private API and web scraping techniques. It is a personal tool and is <strong>not</strong> intended for automated use. Although <strong>highly unlikely</strong>, the developer is not liable for any account restrictions that may result from use.</em></p>
+  </div>
+</section>
+
+<script>
+const SECTIONS = ['hero','features','how','deps','notes','cta'];
+const sectionEls = document.querySelectorAll('section');
+const sideDots   = document.querySelectorAll('.nav-dot');
+const tocItems   = document.querySelectorAll('.menu-toc-item');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      const id = e.target.id;
+      sideDots.forEach(d => d.classList.toggle('active', d.dataset.s === id));
+      tocItems.forEach(t => t.classList.toggle('active', t.dataset.section === id));
+    }
+  });
+}, { threshold: 0.3 });
+sectionEls.forEach(s => obs.observe(s));
+
+const cardObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.feature-card').forEach((c,i) => {
+        setTimeout(() => c.classList.add('visible'), i * 65);
+      });
+      cardObs.disconnect();
+    }
+  });
+}, { threshold: 0.1 });
+const grid = document.querySelector('.feature-grid');
+if (grid) cardObs.observe(grid);
+
+function goTo(id)      { document.getElementById(id)?.scrollIntoView({ behavior:'smooth', block:'start' }); }
+function scrollNext()  {
+  let current = 0, maxVis = 0;
+  sectionEls.forEach((s,i) => {
+    const r = s.getBoundingClientRect();
+    const vis = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+    if (vis > maxVis) { maxVis = vis; current = i; }
+  });
+  goTo(SECTIONS[Math.min(current + 1, SECTIONS.length - 1)]);
+}
+function openMenu()    { document.getElementById('menuOverlay').classList.add('open'); }
+function closeMenu(e)  { if (e.target === document.getElementById('menuOverlay')) document.getElementById('menuOverlay').classList.remove('open'); }
+function tocNav(id)    { document.getElementById('menuOverlay').classList.remove('open'); setTimeout(() => goTo(id), 320); }
+function handleGetStarted() {
+  // placeholder — will be updated with actual shortcut name/action
+  window.location = "shortcuts://run-shortcut?name=SocialMediaEngine&input=text&text=scriptDL";
+}
+</script>
+</body>
+</html>
