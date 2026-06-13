@@ -207,8 +207,8 @@ function install() {
 }
 
 function skip() {
-  window.location.href = 'scriptable:///run?scriptName=SocialMediaEngine&input=' +
-    encodeURIComponent(JSON.stringify({ fn: 'skipUpdate' }))
+  const payload = encodeURIComponent(JSON.stringify({ fn: 'skipUpdate' }))
+  window.location.href = `scriptable:///run?scriptName=SocialMediaEngine&input=text&text=${payload}`
 }
 </script>
 </body>
