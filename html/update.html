@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Update Available</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ig-purple:   #5555ce;
+  --ig-violet:   #9737be;
+  --ig-pink:     #e03567;
+  --ig-orange:   #f77737;
+  --ig-yellow:   #fdb955;
+  --ig-grad:     linear-gradient(135deg,#5555ce 0%,#9737be 25%,#e03567 55%,#f77737 80%,#fdb955 100%);
+  --ig-grad-text:linear-gradient(135deg,#8b6fd4 0%,#c45bb8 30%,#e03567 55%,#f77737 80%,#fdb955 100%);
+  --bg:          #07070a;
+  --bg-card:     #0e0e12;
+  --bg-elevated: #14141a;
+  --border:      rgba(255,255,255,0.06);
+  --text:        #eeeef2;
+  --text-muted:  #56566a;
+  --text-sec:    #8d8da0;
+  --accent-glow: rgba(224,53,103,0.25);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:         #f4f4f8;
+    --bg-card:    #ffffff;
+    --bg-elevated:#ebebf0;
+    --border:     rgba(0,0,0,0.07);
+    --text:       #12121a;
+    --text-muted: #a0a0b8;
+    --text-sec:   #5c5c78;
+  }
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:0 0 env(safe-area-inset-bottom);
+}
+
+/* ── GRADIENT BAR ── */
+.grad-bar{
+  height:3px;
+  background:var(--ig-grad);
+  background-size:200% 200%;
+  animation:gradShift 4s ease infinite;
+}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ── HEADER ── */
+.header{padding:40px 22px 28px;text-align:center;}
+.app-icon{
+  width:72px;height:72px;border-radius:18px;
+  background:var(--ig-grad);
+  background-size:200% 200%;
+  animation:gradShift 4s ease infinite;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+  box-shadow:0 8px 32px var(--accent-glow);
+  font-size:32px;
+}
+.eyebrow{
+  font-size:10px;font-weight:600;letter-spacing:0.2em;
+  text-transform:uppercase;
+  background:var(--ig-grad-text);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+.title{
+  font-family:'DM Sans',sans-serif;
+  font-size:clamp(24px,6vw,32px);
+  font-weight:800;letter-spacing:-0.02em;
+  line-height:1.15;margin-bottom:6px;
+}
+.subtitle{font-size:14px;color:var(--text-sec);line-height:1.5;}
+
+/* ── VERSION BADGE ── */
+.version-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:12px;padding:0 22px 24px;
+}
+.version-chip{
+  padding:6px 14px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  border:1px solid var(--border);
+  background:var(--bg-card);
+  color:var(--text-sec);
+}
+.version-arrow{color:var(--text-muted);font-size:14px;}
+.version-chip.new{
+  background:var(--ig-grad);
+  background-size:200% 200%;
+  animation:gradShift 4s ease infinite;
+  border:none;color:#fff;
+  box-shadow:0 4px 16px var(--accent-glow);
+}
+
+/* ── RELEASE NOTES ── */
+.section{margin:0 22px 20px;}
+.section-label{
+  font-size:10px;font-weight:600;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--text-muted);
+  margin-bottom:10px;
+}
+.notes-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:16px;padding:18px;
+  font-size:14px;line-height:1.7;color:var(--text-sec);
+  white-space:pre-wrap;word-break:break-word;
+  max-height:280px;overflow-y:auto;
+}
+.notes-card::-webkit-scrollbar{width:4px;}
+.notes-card::-webkit-scrollbar-track{background:transparent;}
+.notes-card::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ── BUTTONS ── */
+.btn-group{padding:0 22px;display:flex;flex-direction:column;gap:10px;}
+.btn{
+  width:100%;padding:16px;border-radius:14px;
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+  border:none;cursor:pointer;text-align:center;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity 0.15s,transform 0.1s;
+}
+.btn:active{opacity:0.85;transform:scale(0.98);}
+.btn-primary{
+  background:var(--ig-grad);
+  background-size:200% 200%;
+  animation:gradShift 4s ease infinite;
+  color:#fff;
+  box-shadow:0 6px 24px var(--accent-glow);
+}
+.btn-secondary{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  color:var(--text-sec);
+}
+
+/* ── FOOTER ── */
+.footer{
+  padding:24px 22px 40px;
+  text-align:center;
+  font-size:11px;color:var(--text-muted);
+  line-height:1.6;
+}
+.footer a{color:var(--ig-pink);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="grad-bar"></div>
+
+<div class="header">
+  <div class="app-icon">📸</div>
+  <div class="eyebrow">Update Available</div>
+  <h1 class="title" id="app-name">Social Media Engine</h1>
+  <p class="subtitle">A new version is ready to install.</p>
+</div>
+
+<div class="version-row">
+  <div class="version-chip" id="current-version">v—</div>
+  <div class="version-arrow">→</div>
+  <div class="version-chip new" id="new-version">v—</div>
+</div>
+
+<div class="section">
+  <div class="section-label">What's New</div>
+  <div class="notes-card" id="release-notes">Loading release notes...</div>
+</div>
+
+<div class="btn-group">
+  <button class="btn btn-primary" onclick="install()">⬇️ Install Update</button>
+  <button class="btn btn-secondary" onclick="skip()">Skip This Version</button>
+</div>
+
+<div class="footer">
+  <p>Social Media Engine by <a href="https://routinehub.co">@dastefster</a></p>
+  <p style="margin-top:4px;">Updates delivered via RoutineHub</p>
+</div>
+
+<script>
+// Parse URL params
+const params = new URLSearchParams(window.location.search)
+const newVersion  = params.get('version')  || '—'
+const notes       = params.get('notes')    || 'No release notes available.'
+const dlURL       = params.get('dlURL')    || ''
+const appName     = params.get('appName')  || 'Social Media Engine'
+const currentVer  = params.get('current') || '—'
+
+// Populate
+document.getElementById('app-name').textContent       = appName
+document.getElementById('new-version').textContent    = `v${newVersion}`
+document.getElementById('current-version').textContent = `v${currentVer}`
+document.getElementById('release-notes').textContent  = decodeURIComponent(notes)
+
+function install() {
+  if (dlURL) {
+    window.location.href = decodeURIComponent(dlURL)
+  }
+}
+
+function skip() {
+  window.location.href = 'scriptable:///run?scriptName=SocialMediaEngine&input=' +
+    encodeURIComponent(JSON.stringify({ fn: 'skipUpdate' }))
+}
+</script>
+</body>
+</html>
