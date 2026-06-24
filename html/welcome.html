@@ -509,7 +509,8 @@ function openMenu()   { document.getElementById('menuOverlay').classList.add('op
 function closeMenu(e) { if (e.target === document.getElementById('menuOverlay')) document.getElementById('menuOverlay').classList.remove('open'); }
 function tocNav(id)   { document.getElementById('menuOverlay').classList.remove('open'); setTimeout(() => goTo(id), 320); }
 function handleGetStarted() {
-  window.location = "shortcuts://run-shortcut?name=Social%20Media%20Engine&input=text&text=scriptDL";
+  const payload = encodeURIComponent(JSON.stringify({ fn: 'scriptDL' }))
+  window.location = `shortcuts://run-shortcut?name=Social%20Media%20Engine&input=text&text=${payload}`
 }
 </script>
 </body>
